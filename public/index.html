@@ -1,1 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eşzamanlı Video İzleme</title>
+</head>
+<body>
+  <video id="video" controls width="640" height="360">
+    <source src="video.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    document.getElementById('video').addEventListener('play', () => {
+      socket.emit('video-status', { action: 'play', currentTime: video.currentTime });
+    });
+
+    document.getElementById('video').addEventListener('pause', () => {
+      socket.emit('video-status', { action: 'pause', currentTime: video.currentTime });
+    });
+
+    socket.on('update-video-status', (status) => {
+      const video = document.getElementById('video');
+      video.currentTime = status.currentTime;
+
+      if (status.action === 'play') {
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
+  </script>
+</body>
+</html>
